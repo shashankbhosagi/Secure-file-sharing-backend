@@ -2,12 +2,12 @@
 
 ## Description
 
-This is a secure file sharing application built with Node.js and Express. It allows users to register, create encrypted files, add other users to access those files, and view decrypted files shared with them. Each user has a public and private key pair for encryption and decryption.
+This is a secure file sharing application built with Typescript, Nodejs and Express. It allows users to register, create encrypted files, add other users to access those files, and view decrypted files shared with them. Each user has a public and private key pair for encryption and decryption.
 
 ## Features
 
 - User registration with unique usernames
-- File creation with encryption using AES-256-CBC algorithm
+- File creation with encryption using AES algorithm
 - Adding users to access files securely
 - Viewing decrypted files shared with the user
 - Viewing all files (encrypted and decrypted) accessible to the user

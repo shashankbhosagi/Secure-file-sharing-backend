@@ -24,54 +24,44 @@ This is a secure file sharing application built with Typescript, Nodejs and Expr
 2. Start the production server: `npm run dev`
 3. Access the API endpoints using a REST client like Postman or via a web browser.
 
-## API Endpoints
+## API Endpoints:
 
-### 1. User Registration
+### 1. User Registration:
 
-- **Endpoint**: `POST /register`
-- **Request Body**: `{ "username": "<username>" }`
-- **Response**: `{ "message": "User registered successfully" }`
+- **Endpoint:** `POST /api/v1/register`
+- **Description:** Registers a new user and generates a public-private key pair for secure file sharing.
+- **Request Body:** `{ "username": "example_user" }`
+- **Response:** `{ "message": "User registered successfully" }`
 
-### 2. Create File
+### 2. File Creation:
 
-- **Endpoint**: `POST /create-file`
-- **Request Body**: `{ "content": "<file_content>", "username": "<owner_username>" }`
-- **Response**: `{ "message": "File created successfully !", "fileId": "<file_id>" }`
+- **Endpoint:** `POST /api/v1/create-file`
+- **Description:** Creates a new encrypted file with the provided content and associates it with the user.
+- **Request Body:** `{ "content": "file_content", "username": "owner_username" }`
+- **Response:** `{ "message": "File created successfully", "fileId": "unique_file_id" }`
 
-### 3. Add User to File
+### 3. Add User to File:
 
-- **Endpoint**: `POST /add-user/:fileId`
-- **Request Params**: `fileId` (ID of the file)
-- **Request Body**: `{ "username": "<new_user>" }`
-- **Response**: `{ "message": "User added successfully to access the file" }`
+- **Endpoint:** `POST /api/v1/add-user/:fileId`
+- **Description:** Adds a user to the access list of the specified file, allowing them to decrypt and access the file.
+- **Request Body:** `{ "username": "new_user_to_add" }`
+- **Request Headers:** `{ "owner-username": "owner_username" }`
+- **Response:** `{ "message": "User added successfully to access the file" }`
 
-### 4. View File by ID
+### 4. Get File by ID:
 
-- **Endpoint**: `GET /show-file/:fileId`
-- **Request Params**: `fileId` (ID of the file)
-- **Request Body**: `{ "username": "<username>" }`
-- **Response**: `{ "content": "<file_content>" }`
+- **Endpoint:** `GET /api/v1/files/:fileId`
+- **Description:** Retrieves the content of the specified file using the file ID. The user must have access to the file to view its content.
+- **Request Parameters:** `fileId`
+- **Request Query:** `username`
+- **Response:** `{ "content": "decrypted_file_content" }`
 
-### 5. View All Files
+### 5. View All Files:
 
-- **Endpoint**: `GET /show-all-files`
-- **Request Body**: `{ "username": "<username>" }`
-- **Response**:
-  ```json
-  [
-    {
-      "fileId": "<file_id>",
-      "Owner of the file": "<owner_username>",
-      "content": "<file_content>"
-    },
-    {
-      "fileId": "<file_id>",
-      "Owner of the file": "<owner_username>",
-      "content": "<file_content>"
-    },
-    ...
-  ]
-  ```
+- **Endpoint:** `GET /api/v1/files/all`
+- **Description:** Retrieves all files accessible to the specified user, including files owned by the user and files shared with the user.
+- **Request Query:** `username`
+- **Response:** `[ { "fileId": "unique_file_id", "Owner of the file": "file_owner_username", "content": "decrypted_file_content" }, ...]`
 
 ## Technologies Used
 

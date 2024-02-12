@@ -185,7 +185,7 @@ export const showFilesById = (req: Request, res: Response) => {
 // Get request to view all files
 export const showAllFiles = (req: Request, res: Response) => {
   try {
-    const username = req.query.username as string;
+    const username = req.headers["username"] as string;
 
     if (!username) {
       return res.status(400).json({ error: "Username is required" });

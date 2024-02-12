@@ -58,9 +58,9 @@ This is a secure file sharing application built with Typescript, Nodejs and Expr
 
 ### 5. View All Files:
 
-- **Endpoint:** `GET /api/v1/files/all`
+- **Endpoint:** `GET /api/v1/all-files/`
 - **Description:** Retrieves all files accessible to the specified user, including files owned by the user and files shared with the user.
-- **Request Query:** `username`
+- **Request Headers:** `{ "username": "example_user" }`
 - **Response:** `[ { "fileId": "unique_file_id", "Owner of the file": "file_owner_username", "content": "decrypted_file_content" }, ...]`
 
 ## Technologies Used

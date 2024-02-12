@@ -2,16 +2,20 @@ import { Request, Response } from "express";
 import crypto from "crypto";
 const iv = crypto.randomBytes(16);
 
-const users: { [username: string]: { publicKey: string; privateKey: string } } =
-  {};
-const encryptedFiles: {
-  [fileId: string]: {
-    fileId: String;
-    content: string;
-    encryptedKeys: { [username: string]: string };
-    owner: string;
-  };
-} = {};
+interface User {
+  publicKey: string;
+  privateKey: string;
+}
+
+interface EncryptedFile {
+  fileId: String;
+  content: String;
+  encryptedKeys: { [username: string]: string };
+  owner: string;
+}
+
+const users: { [username: string]: User } = {};
+const encryptedFiles: { [fileId: string]: EncryptedFile } = {};
 
 // Post request, creates user and returns private key of user
 export const registerUser = (req: Request, res: Response) => {
@@ -87,18 +91,37 @@ export const addUser = (req: Request, res: Response) => {
   try {
     const { fileId } = req.params;
     const { username } = req.body;
+    const owner = req.headers["owner-username"];
 
     if (!fileId || !username) {
       res.status(400).json({ error: "File Id and username is required" });
     }
 
-    if (!encryptedFiles[fileId]) {
-      res.status(404).json({ error: "File not found" });
+    if (!owner) {
+      res.status(400).json({ error: "Owner field is required" });
     }
 
-    const fileData = encryptedFiles[fileId];
+    if (!users[username]) {
+      console.log("first");
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    if (!encryptedFiles[fileId]) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    const fileData: EncryptedFile = encryptedFiles[fileId];
+
+    if (fileData.owner != owner) {
+      return res
+        .status(403)
+        .json({ error: "Cannot modify the file unauthorised access" });
+    }
+
     if (fileData.encryptedKeys[username]) {
-      res.status(400).json({ error: "User already has access to the file" });
+      return res
+        .status(400)
+        .json({ error: "User already has access to the file" });
     }
     const ownerUsername = encryptedFiles[fileId].owner;
     const symmetricKey = crypto.privateDecrypt(
@@ -123,7 +146,9 @@ export const addUser = (req: Request, res: Response) => {
 // get request shows all the files
 export const showFilesById = (req: Request, res: Response) => {
   try {
-    const { fileId, username } = req.body;
+    const fileId = req.params.fileId as string;
+    const username = req.query.username as string;
+
     if (!fileId || !username) {
       return res.status(400).json({ error: "File Id and username required " });
     }
@@ -131,7 +156,7 @@ export const showFilesById = (req: Request, res: Response) => {
     if (!encryptedFiles[fileId]) {
       return res.status(404).json({ error: "File not found" });
     }
-    const fileData = encryptedFiles[fileId];
+    const fileData: EncryptedFile = encryptedFiles[fileId];
     if (!fileData.encryptedKeys[username]) {
       return res.status(403).json({ error: "User cannot access this file" });
     }
@@ -143,7 +168,11 @@ export const showFilesById = (req: Request, res: Response) => {
 
     const decipher = crypto.createDecipheriv("aes-256-cbc", decryptedKey, iv);
 
-    let decryptedContent = decipher.update(fileData.content, "base64", "utf8");
+    let decryptedContent = decipher.update(
+      fileData.content.toString(),
+      "base64",
+      "utf8"
+    );
     decryptedContent += decipher.final("utf8");
 
     return res.status(200).json({ content: decryptedContent });
@@ -156,7 +185,7 @@ export const showFilesById = (req: Request, res: Response) => {
 // Get request to view all files
 export const showAllFiles = (req: Request, res: Response) => {
   try {
-    const { username } = req.body;
+    const username = req.query.username as string;
 
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
@@ -168,7 +197,7 @@ export const showAllFiles = (req: Request, res: Response) => {
         file.encryptedKeys.hasOwnProperty(username)
       ) {
         const fileId = file.fileId.toString();
-        const fileData = encryptedFiles[fileId];
+        const fileData: EncryptedFile = encryptedFiles[fileId];
         const decryptedKey = crypto.privateDecrypt(
           users[username].privateKey,
           Buffer.from(fileData.encryptedKeys[username], "base64")
@@ -180,8 +209,8 @@ export const showAllFiles = (req: Request, res: Response) => {
           iv
         );
 
-        let decryptedContent = decipher.update(
-          fileData.content,
+        let decryptedContent: string = decipher.update(
+          fileData.content.toString(),
           "base64",
           "utf8"
         );

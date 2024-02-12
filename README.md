@@ -30,33 +30,48 @@ This is a secure file sharing application built with Node.js and Express. It all
 
 - **Endpoint**: `POST /register`
 - **Request Body**: `{ "username": "<username>" }`
-- Registers a new user with the given username and generates a public-private key pair for encryption and decryption.
+- **Response**: `{ "message": "User registered successfully" }`
 
 ### 2. Create File
 
 - **Endpoint**: `POST /create-file`
 - **Request Body**: `{ "content": "<file_content>", "username": "<owner_username>" }`
-- Creates a new encrypted file with the provided content for the specified user.
+- **Response**: `{ "message": "File created successfully !", "fileId": "<file_id>" }`
 
 ### 3. Add User to File
 
 - **Endpoint**: `POST /add-user/:fileId`
 - **Request Params**: `fileId` (ID of the file)
 - **Request Body**: `{ "username": "<new_user>" }`
-- Adds a new user to access the specified file securely.
+- **Response**: `{ "message": "User added successfully to access the file" }`
 
 ### 4. View File by ID
 
 - **Endpoint**: `GET /show-file/:fileId`
 - **Request Params**: `fileId` (ID of the file)
 - **Request Body**: `{ "username": "<username>" }`
-- Views the content of the specified file, decrypted for the authorized user.
+- **Response**: `{ "content": "<file_content>" }`
 
 ### 5. View All Files
 
 - **Endpoint**: `GET /show-all-files`
 - **Request Body**: `{ "username": "<username>" }`
-- Views all files accessible to the authorized user, with decrypted content for files shared with them.
+- **Response**:
+  ```json
+  [
+    {
+      "fileId": "<file_id>",
+      "Owner of the file": "<owner_username>",
+      "content": "<file_content>"
+    },
+    {
+      "fileId": "<file_id>",
+      "Owner of the file": "<owner_username>",
+      "content": "<file_content>"
+    },
+    ...
+  ]
+  ```
 
 ## Technologies Used
 

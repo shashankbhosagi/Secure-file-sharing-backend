@@ -14,7 +14,7 @@ This is a secure file sharing application built with Typescript, Nodejs and Expr
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/shashankbhosagi/oiconomos.git`
+1. Clone the repository: `git clone https://github.com/shashankbhosagi/Secure-file-sharing-backend.git`
 2. Navigate to the project directory: `cd oiconomos`
 3. Install dependencies: `npm install`
 
